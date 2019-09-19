@@ -6,6 +6,8 @@ import ai.diffy.analysis.{InMemoryDifferenceCollector, InMemoryDifferenceCounter
 import ai.diffy.proxy.Settings
 import com.google.inject.Provides
 import com.twitter.inject.TwitterModule
+import ai.diffy.proxy.{ResponseMode, Settings, Target}
+import ai.diffy.proxy.ResponseMode.EmptyResponse
 import com.twitter.util.Duration
 import javax.inject.Singleton
 
@@ -64,6 +66,9 @@ object DiffyServiceModule extends TwitterModule {
   val allowHttpSideEffects =
     flag[Boolean]("allowHttpSideEffects", false, "Ignore POST, PUT, and DELETE requests if set to false")
 
+  val responseMode =
+    flag[ResponseMode]("responseMode", EmptyResponse, "Respond with 'empty' response, or response from 'primary', 'secondary' or 'candidate'")
+
   val excludeHttpHeadersComparison =
     flag[Boolean]("excludeHttpHeadersComparison", false, "Exclude comparison on HTTP headers if set to false")
 
@@ -98,6 +103,7 @@ object DiffyServiceModule extends TwitterModule {
       Duration.fromMinutes(emailDelay()),
       rootUrl(),
       allowHttpSideEffects(),
+      responseMode(),
       excludeHttpHeadersComparison(),
       skipEmailsWhenNoErrors(),
       httpsPort(),
